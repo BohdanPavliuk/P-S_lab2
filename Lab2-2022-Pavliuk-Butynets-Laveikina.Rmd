@@ -256,10 +256,19 @@ N_guar
 
 ```
 
-Epsilon calculate by $\epsilon = Z * SE$ Here Z - critical value SE -
-standard error
+Epsilon calculate by
 
-$SE = \frac{\sigma}{\sqrt(N)}$ It's calculation of standard error
+$\epsilon = Z * SE$
+
+Here
+
+Z - critical value
+
+SE -standard error
+
+$SE = \frac{\sigma}{\sqrt(N)}$
+
+It's calculation of standard error
 
 We calculate Z using qnorm(1 - alpha/2) because we want the critical
 value for the central portion of the standard normal distribution, which
@@ -275,8 +284,15 @@ If $N = 1,000,000$ (as it was the value used in our experiment), then
 $\epsilon\approx0.00404$.
 
 If the condition is that $\epsilon \le 0.03$, then
+
 $N \ge (\frac{Z * \sigma}{\epsilon})^2$ $Z\approx 1.96$
-$\epsilon \approx 0.004$ $\sigma \approx 0.02$ That means that
+
+$\epsilon \approx 0.004$
+
+$\sigma \approx 0.02$
+
+That means that
+
 $N \approx 1.88$ $N = 2$.
 
 ```{r}
@@ -331,13 +347,25 @@ And $\epsilon$ of our sample is equal to 0.004
 
 ### Point 1 for task 2
 
-1.  Specify the parameter of the Poisson distribution of $X_i$ (you'll need the atomic mass of *Cesium-137*)\
-2.  Show that the distribution of the sample means of $X_1,\dots,X_n$ gets very close to a normal one as $n$ becomes large and identify that normal distribution. To this end,
-    -   simulate the realization $x_1,x_2,\dots,x_n$ of the $X_i$ and calculate the sample mean $s=\overline{\mathbf{x}}$;
-    -   repeat this $K$ times to get the sample $\mathbf{s}=(s_1,\dots,s_K)$ of means and form the empirical cumulative distribution function $\hat F_{\mathbf{s}}$ of $\mathbf{s}$;
-    -   identify $\mu$ and $\sigma^2$ such that the \textbf{c.d.f.} $F$ of $\mathscr{N}(\mu,\sigma^2)$ is close to the \textbf{e.c.d.f.} $\hat F_{\mathbf{s}}$ and plot both **c.d.f.**'s on one graph to visualize their proximity (use the proper scales!);
-    -   calculate the maximal difference between the two \textbf{c.d.f.}'s;
-    -   consider cases $n = 5$, $n = 10$, $n=50$ and comment on the results.\
+1.  Specify the parameter of the Poisson distribution of $X_i$ (you'll
+    need the atomic mass of *Cesium-137*)\
+2.  Show that the distribution of the sample means of $X_1,\dots,X_n$
+    gets very close to a normal one as $n$ becomes large and identify
+    that normal distribution. To this end,
+    -   simulate the realization $x_1,x_2,\dots,x_n$ of the $X_i$ and
+        calculate the sample mean $s=\overline{\mathbf{x}}$;
+    -   repeat this $K$ times to get the sample
+        $\mathbf{s}=(s_1,\dots,s_K)$ of means and form the empirical
+        cumulative distribution function $\hat F_{\mathbf{s}}$ of
+        $\mathbf{s}$;
+    -   identify $\mu$ and $\sigma^2$ such that the \textbf{c.d.f.} $F$
+        of $\mathscr{N}(\mu,\sigma^2)$ is close to the \textbf{e.c.d.f.}
+        $\hat F_{\mathbf{s}}$ and plot both **c.d.f.**'s on one graph to
+        visualize their proximity (use the proper scales!);
+    -   calculate the maximal difference between the two
+        \textbf{c.d.f.}'s;
+    -   consider cases $n = 5$, $n = 10$, $n=50$ and comment on the
+        results.\
 
 ```{r}
 set.seed(5)
@@ -426,20 +454,36 @@ for (ind in 1:4){
 
 #### Comments for task
 
-The similarity between the cumulative distribution functions of the Poisson distribution of Random variables which represent in our case the number of decays in sample "i" in one second and the normal distribution is evident in the plots. When sample size "n" -\> infinity, the distinction between them diminishes, making the results quite accurate. The Central Limit Theorem (CLT) works!
+The similarity between the cumulative distribution functions of the
+Poisson distribution of Random variables which represent in our case the
+number of decays in sample "i" in one second and the normal distribution
+is evident in the plots. When sample size "n" -\> infinity, the
+distinction between them diminishes, making the results quite accurate.
+The Central Limit Theorem (CLT) works!
 
 ### Point 2 for task 2
 
-Calculate the largest possible value of $n$, for which the total number of decays in one second is less than $8 \times 10^8$ with probability at least $0.95$. To this end,
+Calculate the largest possible value of $n$, for which the total number
+of decays in one second is less than $8 \times 10^8$ with probability at
+least $0.95$. To this end,
 
-1.  obtain the theoretical bound on $n$ using Markov inequality, Chernoff bound and Central Limit Theorem, and compare the results;
-2.  simulate the realization $x_1,x_2,\dots,x_n$ of the $X_i$ and calculate the sum $s=x_1 + \cdots +x_n$;
-3.  repeat this $K$ times to get the sample $\mathbf{s}=(s_1,\dots,s_K)$ of sums;
-4.  calculate the number of elements of the sample which are less than critical value ($8 \times 10^8$) and calculate the empirical probability; comment whether it is close to the desired level $0.95$
+1.  obtain the theoretical bound on $n$ using Markov inequality,
+    Chernoff bound and Central Limit Theorem, and compare the results;
+2.  simulate the realization $x_1,x_2,\dots,x_n$ of the $X_i$ and
+    calculate the sum $s=x_1 + \cdots +x_n$;
+3.  repeat this $K$ times to get the sample $\mathbf{s}=(s_1,\dots,s_K)$
+    of sums;
+4.  calculate the number of elements of the sample which are less than
+    critical value ($8 \times 10^8$) and calculate the empirical
+    probability; comment whether it is close to the desired level $0.95$
 
-Find the maximum n for which the sum of n numbers from the Poisson distribution with parameter mu with a probability more than 0.95 is less than the critical value of (8\*10\^8).
+Find the maximum n for which the sum of n numbers from the Poisson
+distribution with parameter mu with a probability more than 0.95 is less
+than the critical value of (8\*10\^8).
 
-This code verifies the correct definition of 'N': When max value of n equals 'N,' it displays 1000 sums(and empirical probability is 1) , and when 'N+1'(empirical probability is 0), the number of sums is set to 0.
+This code verifies the correct definition of 'N': When max value of n
+equals 'N,' it displays 1000 sums(and empirical probability is 1) , and
+when 'N+1'(empirical probability is 0), the number of sums is set to 0.
 
 ```{r}
 
@@ -479,9 +523,11 @@ Note that, X1, X2…Xn are inpedendent.
 
 $P(S_n < 8*10^8) \ge 0.95 \\ 1 - P(S_n \ge 8*10^8) \ge 0.95 \\ -P(S_n \ge 8*10^8) \ge -0.05 \\ P(S_n \ge 8*10^8) \le 0.05$
 
-$P(S_n \ge 8*10^8) \le \frac{1}{8*10^8}*E(S_n) \le 0.05 \\ \frac{E(S_n)}{8*10^8} \le 0.05 \\ E(S_n) \le 4*10^7 \\ E(S_n) = n \mu \le 4*10^7 \\ n \mu \le 4*10^7 \\ n \le \frac{4*10^7}{15997652}$ n_max \~ 2
+$P(S_n \ge 8*10^8) \le \frac{1}{8*10^8}*E(S_n) \le 0.05 \\ \frac{E(S_n)}{8*10^8} \le 0.05 \\ E(S_n) \le 4*10^7 \\ E(S_n) = n \mu \le 4*10^7 \\ n \mu \le 4*10^7 \\ n \le \frac{4*10^7}{15997652}$
+n_max \~ 2
 
-Despite applying Markov's inequalities, it is important to understand that this method does not provide an exact or precise result.
+Despite applying Markov's inequalities, it is important to understand
+that this method does not provide an exact or precise result.
 
 -   Using Chernoff bound:
 
@@ -495,9 +541,10 @@ $P(S \geq a) = e^{-sa} \cdot M_{Sn}(s)$
 
 $M_{Sn}(s) = E(e^{s \cdot S_n})$
 
-$G_{Sn}(t) = E(t^{S_n}) = E(e^{s \cdot S_n})$, note that Sn = S1 + S2 + ..; and all valiables are independent.
+$G_{Sn}(t) = E(t^{S_n}) = E(e^{s \cdot S_n})$, note that Sn = S1 + S2 +
+..; and all valiables are independent.
 
-$G_{Sn}(t) = E(e^{s \cdot n  \cdot  S_0}) = e^{\mu \cdot (e^{s \cdot n -1})}$
+$G_{Sn}(t) = E(e^{s \cdot n \cdot S_0}) = e^{\mu \cdot (e^{s \cdot n -1})}$
 
 $1 - e^{-sa} \cdot e^{\mu \cdot (e^{s \cdot n -1})} \ge 0.95$
 
@@ -511,11 +558,12 @@ $\frac{\ln\left(\frac{\ln(0.05) + sa + \mu}{\mu}\right)} {s}{ds}$ = 0
 
 s = 1.64108
 
-$n \le  \frac{\ln\left(\frac{\ln(0.05) + 1.64108*10^8*8 + \mu}{\mu}\right)} {1.64108}$
+$n \le \frac{\ln\left(\frac{\ln(0.05) + 1.64108*10^8*8 + \mu}{\mu}\right)} {1.64108}$
 
 n_max \~ 3
 
-We compute the Chernoff bound, but it is not a highly precise approximation.
+We compute the Chernoff bound, but it is not a highly precise
+approximation.
 
 -   Using CLT bound:
 
@@ -523,7 +571,8 @@ Standard formula for CLT -\>
 
 $P(S \le a) = P(\frac{S - \mu \cdot n}{\sqrt{n} \cdot \sigma}) \le \frac{a - \mu \cdot n}{\sqrt{n} \cdot \sigma} \approx \Phi(\frac{a - \mu \cdot n}{\sqrt{n} \cdot \sigma})$
 
-We have: $\Phi(\frac{a - \mu \cdot n}{\sqrt{n} \cdot \sigma}) \ge 0.95$ from standard normal table
+We have: $\Phi(\frac{a - \mu \cdot n}{\sqrt{n} \cdot \sigma}) \ge 0.95$
+from standard normal table
 
 Mean and variance are equal.
 
@@ -535,9 +584,19 @@ n_max \~ 50
 
 CLT bounds gives us the closest one to the real result!
 
-As we sum up earlier, we calculated the Poisson distribution parameter for Cesium-137 by taking into account its mass, atomic number, and activity. We then calculated the characteristics of the standard normal distribution and found that the sample mean distribution approached a normal distribution as the sample size approach to infinity.
+#### Conclusion
 
-Next, we wanted to determine the largest sample size (N) for which the earlier paragraph's conditions would hold true. We saw that the Central Limit Theorem offered a more accurate estimate of the distribution as the sample size increased, whereas the Markov inequality and the Chernoff constraint both produced approximate answers.
+As we sum up earlier, we calculated the Poisson distribution parameter
+for Cesium-137 by taking into account its mass, atomic number, and
+activity. We then calculated the characteristics of the standard normal
+distribution and found that the sample mean distribution approached a
+normal distribution as the sample size approach to infinity.
+
+Next, we wanted to determine the largest sample size (N) for which the
+earlier paragraph's conditions would hold true. We saw that the Central
+Limit Theorem offered a more accurate estimate of the distribution as
+the sample size increased, whereas the Markov inequality and the
+Chernoff constraint both produced approximate answers.
 
 ### Task 3.
 
@@ -651,7 +710,7 @@ for (i in n) {
 ## Conclusion
 
 According to the graphs, we can observe that with bigger n (in our case
-it`s 50) our two lines for ECDF and CDF overlap. Also as we can see the
+it\`s 50) our two lines for ECDF and CDF overlap. Also as we can see the
 difference between this two function is the smallest for larger values
 of n.
 
@@ -660,8 +719,8 @@ of n.
 #### First, consider the event of interest
 
 $$S = X_1 + ... + X_{100}$$ As from the condition we know that number of
-clicks doesn\`t exceed 100, so $n = 100$
-Now we calculate the sum
+clicks doesn\`t exceed 100, so $n = 100$ Now we calculate the sum
+
 ```{r}
 n = 100
 S <- sum(rexp(n, rate = nu1))
@@ -700,8 +759,8 @@ $$P(S \ge a) \le e^{-ta}*M_S(t)\\t>0$$ We need to find $P(S\ge 1)$
 
 $$P(S \ge 1) \le e^{-t}*M_S(t)$$
 
-Now we need to find moment generating function (mgf)
-Consider over r.v. independent
+Now we need to find moment generating function (mgf) Consider over r.v.
+independent
 $$M_S(t) = E(e^{St}) = E(e^{X_1t} * \dots * e^{X_{100}t}) = E^{100}(e^{X_{i}t})$$
 
 And implying it to the mgf we will have
@@ -711,11 +770,11 @@ After that we can limit our Chernoff
 
 $$P(S \ge 1) \le e^{-t}*M_s(t) \ge 0.95$$
 
-Let`s substitute values to the inequality
-$$e^{-t}*(\frac{15*N} {15*N - t})^{100} \ge 0.95$$ 
+Let\`s substitute values to the inequality
+$$e^{-t}*(\frac{15*N} {15*N - t})^{100} \ge 0.95$$
 
-Now we need to express and find $N$ from this inequality
-Also as $t > 0$, we can consider the most suitable value and it will be $t=1$
+Now we need to express and find $N$ from this inequality Also as
+$t > 0$, we can consider the most suitable value and it will be $t=1$
 After calculation $N$ is equal
 
 $$ N \le \frac{t*(e*0.95)^{1/100}}{15*((e*0.95)^{1/100} - 1)}$$
@@ -750,7 +809,9 @@ $$N \le \frac {10 - 1.65}{0.1 * 15}$$ $$N \le 5.56$$
 
 **Simulate the realization**
 
-In this part we need to compare our results from different inequalities to probability that was given in the condition
+In this part we need to compare our results from different inequalities
+to probability that was given in the condition
+
 ```{r}
 # Lowest and highest value of N
 lowest <- 5.56
