@@ -294,7 +294,14 @@ colnames(df) <- c("Corruptions", "Frequency")
 
 
 
+barplot(height = df$Frequency, names.arg = df$Corruptions, beside = TRUE,
+        xlab = "Corruptions", ylab = "Logarifm Frecuency", main = "Histogram")
 
+```
+
+It's difficult to analyse this histogram, so we made a logarithm one
+
+```{r}
 barplot(height = log10(df$Frequency), names.arg = df$Corruptions, beside = TRUE,
         xlab = "Corruptions", ylab = "Logarifm Frecuency", main = "Histogram")
 ```
@@ -318,7 +325,8 @@ r.v.
 We simulate a Hamming encoding, transmission and decoding of messages.
 Our real probability of successfully decode message - 0.955. And to get
 a confident interval with $\epsilon \leq 0.03$ we need sample only of 2.
-And $\epsilon$ of our sample is equal to 0.004 \### Task 2.
+And $\epsilon$ of our sample is equal to 0.004\
+\### Task 2.
 
 #### In this task, we discuss a real-life process that is well modelled by a Poisson distribution. As you remember, a Poisson random variable describes occurrences of rare events, i.e., counts the number of successes in a large number of independent random experiments. One of the typical examples is the **radioactive decay** process.
 
