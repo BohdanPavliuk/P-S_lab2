@@ -1,5 +1,5 @@
 ---
-title: 'P&S-2022: Lab assignment 2'
+title: 'P&S-2023: Lab assignment 2'
 author: "Bohdan Pavliuk, Dzvenyslava Butynets, Yelyzaveta Laveikina"
 output:
   html_document:
@@ -8,10 +8,9 @@ editor_options:
   markdown: 
     wrap: 72
 ---
-*Work distribution*
-Bohdan Pavliuk - Task 1 
-Dzvenyslava Butynets - Task 2 
-Yelyzaveta Laveikina - Task 3
+
+*Work distribution* Bohdan Pavliuk - Task 1 Dzvenyslava Butynets - Task
+2 Yelyzaveta Laveikina - Task 3
 
 ## General comments and instructions
 
@@ -101,17 +100,16 @@ $$
     transmitting a $4$-digit binary message. Do you think it is one of
     the known distributions?
 
-#### You can (but do not have to) use the chunks we prepared for you
-
 #### First, we set the **id** of the team and define the probability $p$ and the generator and parity-check matrices $G$ and $H$
 
 ```{r}
-# your team id number 
-                          ###
-id <- 50                  ### Change to the correct id!
-                          ###
+# our team id number 
+                        
+id <- 5                  
+                          
 set.seed(id)
 p <- id/100
+
 # matrices G and H
 G <- matrix(c(1, 1, 1, 0, 0, 0, 0,
 		1, 0, 0, 1, 1, 0, 0,
@@ -120,41 +118,207 @@ G <- matrix(c(1, 1, 1, 0, 0, 0, 0,
 H <- t(matrix(c(1, 0, 1, 0, 1, 0, 1,
 		0, 1, 1, 0, 0, 1, 1,
 		0, 0, 0, 1, 1, 1, 1), nrow = 3, byrow = TRUE))
-# cat("The matrix G is: \n") 
-#G  
-#cat("The matrix H is: \n") 
-#H
-#cat("The product GH must be zero: \n")
-#(G%*%H) %%2
+
+
+cat("The matrix G is: \n") 
+G  
+cat("The matrix H is: \n") 
+H
+cat("The product GH must be zero: \n")
+(G%*%H) %%2
 ```
 
-#### Next, generate the messages
+#### generate N messages
 
 ```{r}
-# generate N messages
-
 message_generator <- function(N) {
   matrix(sample(c(0,1), 4*N, replace = TRUE), nrow = N)
 }  
-messages <- message_generator(100)
+
+#We choose enough big N
+N <- 1000000
+messages <- message_generator(N)
+cat("Head of our messages matrix \n")
+head(messages)
+
+#Multiply all our messages by G matrix to get encode messages
 codewords <- (messages %*% G) %% 2
+cat("The matrix of encoded messages is: \n")
+head(codewords, n = 10)
 ```
 
 #### Generate random errors; do not forget that they occur with probability $p$! Next, generate the received messages
 
 ```{r}
-#  errors <- ...
-#  received <-   
+#Generate error in encode messages
+#1 suit for error during transmission .
+generating_errors <- function(N){
+  matrix(sample(c(0,1), 7*N, replace = TRUE, prob=c(1-p, p)), nrow=N)
+}
+
+errors <- generating_errors(N)
+cat("The generated errors matrix is: \n")
+head(errors, n = 10)
+
+modulo2 <- function(x){
+  return (x %% 2)
+}
+#Sum matrix with errors and encode messages to show the received messages.
+received <- codewords + errors
+received <- t(apply(received, 1 , modulo2))
+head(received)
+
 ```
 
 The next steps include detecting the errors in the received messages,
-correcting them, and then decoding the obtained messages. After this,
-you can continue with calculating all the quantities of interest
+correcting them, and then decoding the obtained messages.
 
-**Do not forget to include several sentences summarizing your work and
-the conclusions you have made!**
+```{r}
 
-### Task 2.
+decode <- function(x) {
+	# multiplying matrices with recieved messages and matrix H
+	z <- x %*% H %% 2
+	
+	# checking index of the corrupted bit (if exists)
+	idx <- z[1,1] + 2 * z[1,2] + 4 * z[1,3]
+	
+	# correcting the message (flipping the bit)
+	if (idx > 0) {
+		x[idx] <- (x[idx] + 1) %% 2
+	}
+	
+	# return the decoded message
+	return(c(x[3],x[5],x[6],x[7]))
+}
+
+decoded_messages <- t(apply(received, 1, decode))
+cat("The matrix of decoded messages is: \n")
+head(decoded_messages)
+
+```
+
+Calculate the real and expected probability
+
+```{r}
+#Sum all correctly decoded messages and divide by total number of all messages
+actual_prob <- sum(
+	decoded_messages[,1]==messages[,1]& 
+	decoded_messages[,2]==messages[,2]&
+	decoded_messages[,3]==messages[,3]&
+	decoded_messages[,4]==messages[,4]) / N
+
+#Expected probability of our case
+expected_probability <- ((1 - p)**7 + 7 * p * (1 - p)**6)
+cat("The actual probability is: \n")
+actual_prob
+cat("The expected probability is: \n")
+expected_probability
+```
+
+The expected probability and the real one is seems to be equal.
+
+Estimating of standard deviation
+
+```{r}
+expectation = 1 * actual_prob
+cat("Expectation is equal to \n")
+expectation
+
+#standard deviation
+variance = (actual_prob * (1 - actual_prob)) / N
+
+cat("Variance is equal to \n")
+variance
+cat("Standard deviation is equal to \n")
+stand_dev <- sqrt(variance)
+stand_dev
+```
+
+```{r}
+#find and epsilon e = Z*SE
+# e - epsilon
+# Z - Critical value
+# SE - Standard error 
+SE <- stand_dev / sqrt(N)
+
+alpha <- 0.05
+Z <- qnorm(1 - alpha / 2)
+e = Z * SE
+cat("Epsilon for N = 1,000,000 equal to \n")
+e
+
+cat("If Epsilon less-equal 0.03 than N that guarantees this epsilon equal to \n")
+e <- 0.03
+N_guar <- ceiling((Z * stand_dev / e) ** 2)
+N_guar
+
+
+
+```
+
+Epsilon calculate by $\epsilon = Z * SE$ Here Z - critical value SE -
+standard error
+
+$SE = \frac{\sigma}{\sqrt(N)}$ It's calculation of standard error
+
+We calculate Z using qnorm(1 - alpha/2) because we want the critical
+value for the central portion of the standard normal distribution, which
+covers 95% of the area with 2.5% in each tail. The result will be
+approximately 1.96, which is the Z-score for a 95% confidence interval.
+
+How CLT is using here: The CLT states that for a sufficiently large
+sample size (N), the sample mean (in this case, the sample proportion)
+follows a normal distribution. This is crucial for constructing a
+confidence interval.
+
+If $N = 1,000,000$ (as it was the value used in our experiment), then
+$\epsilon\approx0.00404$.
+
+If the condition is that $\epsilon \le 0.03$, then
+$N \ge (\frac{Z * \sigma}{\epsilon})^2$ $Z\approx 1.96$
+$\epsilon \approx 0.004$ $\sigma \approx 0.02$ That means that
+$N \approx 1.88$ $N = 2$.
+
+```{r}
+
+# checking if the message was decoded properly
+correct_messages_truth_table <- decoded_messages!=messages
+#head(correct_messages_truth_table)
+# getting the sum of incorrect messages for every bit
+
+correct_messages_truth_table <- apply(correct_messages_truth_table, 1, sum)
+value_counts <- table(correct_messages_truth_table)
+df <- data.frame(value_counts)
+reversed_df <- as.data.frame(rev(t(apply(df, 1, rev))))
+colnames(df) <- c("Corruptions", "Frequency")
+
+
+
+
+barplot(height = log10(df$Frequency), names.arg = df$Corruptions, beside = TRUE,
+        xlab = "Corruptions", ylab = "Logarifm Frecuency", main = "Histogram")
+```
+
+From this histogram which represent frequency of corruptions and are
+shown in logarithm way(divisions differ by a factor of 10) we see that
+than 0 corruptions occur 100 times more often than other. 1 and 2
+corruptions seem pretty the same and 3 corruptions occur approximately 3
+time rare than 1 or 2.
+
+The random variables, which are discrete(means that standard normal
+distribution doesn's suit here) and represent Hamming coding doesn't
+seems to have any of knowing distributions. Because we can't confirm
+Poisson distribution from the graphic. And it is not a binomial one,
+because of Hamming code error that occur doesn't have probapility of p
+to occur and 1 - p to not. So we can't discribe a distribution of any
+r.v.
+
+#### Conclusion
+
+We simulate a Hamming encoding, transmission and decoding of messages.
+Our real probability of successfully decode message - 0.955. And to get
+a confident interval with $\epsilon \leq 0.03$ we need sample only of 2.
+And $\epsilon$ of our sample is equal to 0.004 \### Task 2.
 
 #### In this task, we discuss a real-life process that is well modelled by a Poisson distribution. As you remember, a Poisson random variable describes occurrences of rare events, i.e., counts the number of successes in a large number of independent random experiments. One of the typical examples is the **radioactive decay** process.
 
@@ -339,16 +503,20 @@ for (i in n) {
   print(max(abs(ecdf(sample_means)(x)-pnorm(x, mean = mu, sd = sigma))))
 }
 ```
+
 ## Conclusion
 
-According to the graphs, we can observe that with bigger n (in our case it`s 50) our two lines for ECDF and CDF overlap. Also as we can see the difference between this two function is the smallest for larger values of n.
+According to the graphs, we can observe that with bigger n (in our case
+it\`s 50) our two lines for ECDF and CDF overlap. Also as we can see the
+difference between this two function is the smallest for larger values
+of n.
 
 ## Part 3.2
 
 #### First, consider the event of interest
 
-$$S = X_1 + ... + X_{100}$$
-As from the condition we know that number of clicks doesn`t exceed 100, so $n = 100$
+$$S = X_1 + ... + X_{100}$$ As from the condition we know that number of
+clicks doesn\`t exceed 100, so $n = 100$
 
 ```{r}
 n = 100
@@ -362,76 +530,70 @@ S
 
 ### Formula
 
-$$P(S \ge a) \le \frac {\mu_S}{a}$$ 
-It is known that the place can be considered safe when the number of clicks in one minute does not exceed
+$$P(S \ge a) \le \frac {\mu_S}{a}$$ It is known that the place can be
+considered safe when the number of clicks in one minute does not exceed
 100, so we need to find probability, where $a=1$ (1 minute)
 
-$$P(S \ge 1) \le \frac {\mu_S}{1}$$ 
-Our ${\mu_S}$ is equal to:
+$$P(S \ge 1) \le \frac {\mu_S}{1}$$ Our ${\mu_S}$ is equal to:
 
 $${\mu_S} = \frac {100}{\nu} \Rightarrow {\mu_S} = \frac {100}{15*N}$$
 Now, we can substitute our values into inequality
 
-$$P(S \ge 1) \le \frac {100} {15*N}$$ 
-As given in the condition, the probability that our place is safe is 0,95 
-Using this information we can find upper bound of Markov`s inequality
+$$P(S \ge 1) \le \frac {100} {15*N}$$ As given in the condition, the
+probability that our place is safe is 0,95 Using this information we can
+find upper bound of Markov\`s inequality
 
-$$0.95 \le \frac {100} {15*N}$$ 
-From this inequality we need to find $N$, which is he number N of the radioactive samples
+$$0.95 \le \frac {100} {15*N}$$ From this inequality we need to find
+$N$, which is he number N of the radioactive samples
 
-$$N \le 7.02 $$ 
+$$N \le 7.02 $$
 
 **Chernoff**
 
 ### Formula
 
-$$P(S \ge a) \le e^{-ta}*M_S(t)\\t>0$$ 
-We need to find $P(S\ge 1)$
+$$P(S \ge a) \le e^{-ta}*M_S(t)\\t>0$$ We need to find $P(S\ge 1)$
 
-$$P(S \ge 1) \le e^{-t}*M_S(t)$$ 
+$$P(S \ge 1) \le e^{-t}*M_S(t)$$
 
 Now we need to find moment generating function (mgf)
 $$M_S(t) = E(e^{St}) = E(e^{X_1t} * \dots * e^{X_{100}t}) = E^{100}(e^{X_{i}t}) = M_X^{100}(t) = (\frac{\nu_1*N} {\nu_1*N -  t})^{100}$$
-After that we can limit our Chernoff 
+After that we can limit our Chernoff
 
-$$P(S \ge 1) \le e^{-t}*M_s(t) \ge 0.95$$ 
+$$P(S \ge 1) \le e^{-t}*M_s(t) \ge 0.95$$
 
 Now we need to find $N$ from this inequality
 
-$$N \le \frac{t*(e*0.95)^{1/100}}{15*((e*0.95)^{1/100} - 1)}$$
-To find N we need to take derivative
+$$N \le \frac{t*(e*0.95)^{1/100}}{15*((e*0.95)^{1/100} - 1)}$$ To find N
+we need to take derivative
 
 $$N \le 6.06$$
-
 
 **Central Limit theorem**
 
 ### Formula
 
 $$P(\frac {S - 100 * \mu} {\sigma * \sqrt n} \le t) \rightarrow Ф(t)$$
-We need to find 
+We need to find
 
-$$P(S \ge 1) = 1 - P(S \le 1)$$
-And we can limit our probability
+$$P(S \ge 1) = 1 - P(S \le 1)$$ And we can limit our probability
 
-$$1 - P(S \le 1) \ge 0.95 \Rightarrow P(S \le 1) \le 0.05$$
-Now we find our ${\mu_s}$ and ${\sigma_s}$
+$$1 - P(S \le 1) \ge 0.95 \Rightarrow P(S \le 1) \le 0.05$$ Now we find
+our ${\mu_s}$ and ${\sigma_s}$
 
-$$\mu = \frac {1} {15*N} = \sigma$$ 
-Now, let`s substitute our values to the inequality 
-P.S. ${\sqrt n} = {\sqrt 100} = {10}$
+$$\mu = \frac {1} {15*N} = \sigma$$ Now, let\`s substitute our values to
+the inequality P.S. ${\sqrt n} = {\sqrt 100} = {10}$
 
 $$P(\frac {S - 100 * \frac 1 {15 * N}}{ \frac 1 {15 * N} * 10} \le \frac {1 - 100 * \frac 1 {15 * N}}{\frac 1 {15 * N}* 10}) = Ф(\frac {1 - 100 * \frac 1 {15 * N}}{\frac 1 {15 * N}* 10})$$
 $$P(Z \le \frac {1 - 100 * \frac 1 {15 * N}}{\frac 1 {15 * N}* 10}) \le 0.05$$
-Now, we need to use z-score and z-table to find value of $N$
-P.S. According to z-table the equivalent of 0.05 is -1.65
+Now, we need to use z-score and z-table to find value of $N$ P.S.
+According to z-table the equivalent of 0.05 is -1.65
 
 $$\frac {1 - 100 * {\mu }}{10 * {\sigma}} \le -1.65$$
 $$\frac {1 - 100 * \frac {1} {15*N}}{10 * \frac {1} {15*N}} \le -1.65$$
 Now, we calculate our $N$
 
-$$N \le \frac {10 - 1.65}{0.1 * 15}$$
-$$N \le 5.56$$
+$$N \le \frac {10 - 1.65}{0.1 * 15}$$ $$N \le 5.56$$
 
 **Simulate the realization**
 
@@ -468,4 +630,9 @@ cat("Probability for N = 7.02 =>", estimation(7.02, K, nu1), "\n")
 
 ## Conclusion
 
-As we can observe, the most accurate result is obtained by using CLT because while comparing estimating probability with that that was given in the condition it`s the same. Markov`s inequality shows the worst result, while comparing it has the difference more than 0.5. Charnoff method of finding bound is closer to the right ansear but not as accurate as CLT.
+As we can observe, the most accurate result is obtained by using CLT
+because while comparing estimating probability with that that was given
+in the condition it`s the same. Markov`s inequality shows the worst
+result, while comparing it has the difference more than 0.5. Charnoff
+method of finding bound is closer to the right ansear but not as
+accurate as CLT.
