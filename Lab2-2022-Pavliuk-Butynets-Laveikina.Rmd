@@ -476,9 +476,9 @@ sigma <- mu / sqrt(n)
 #### We can now plot ecdf and cdf for n = 5, 10, 50
 
 ```{r}
-# Creating a sequence of values from 0 to 0.500 with a step of 0.025 
+# Creating a sequence of values from 0 to 1 with a step of 0.025 
 # Then use this for finding difference between ECDF and CDF
-x <- seq(0, 0.500, by=0.025)
+x <- seq(0, 1, by=0.025)
 
 for (i in n) {
   
@@ -515,7 +515,7 @@ for (i in n) {
 ## Conclusion
 
 According to the graphs, we can observe that with bigger n (in our case
-it\`s 50) our two lines for ECDF and CDF overlap. Also as we can see the
+it`s 50) our two lines for ECDF and CDF overlap. Also as we can see the
 difference between this two function is the smallest for larger values
 of n.
 
@@ -525,7 +525,7 @@ of n.
 
 $$S = X_1 + ... + X_{100}$$ As from the condition we know that number of
 clicks doesn\`t exceed 100, so $n = 100$
-
+Now we calculate the sum
 ```{r}
 n = 100
 S <- sum(rexp(n, rate = nu1))
@@ -565,15 +565,24 @@ $$P(S \ge a) \le e^{-ta}*M_S(t)\\t>0$$ We need to find $P(S\ge 1)$
 $$P(S \ge 1) \le e^{-t}*M_S(t)$$
 
 Now we need to find moment generating function (mgf)
-$$M_S(t) = E(e^{St}) = E(e^{X_1t} * \dots * e^{X_{100}t}) = E^{100}(e^{X_{i}t}) = M_X^{100}(t) = (\frac{\nu_1*N} {\nu_1*N -  t})^{100}$$
+Consider over r.v. independent
+$$M_S(t) = E(e^{St}) = E(e^{X_1t} * \dots * e^{X_{100}t}) = E^{100}(e^{X_{i}t})$$
+
+And implying it to the mgf we will have
+$$M_X^{100}(t) = (\frac{\nu_1*N} {\nu_1*N -  t})^{100}$$
+
 After that we can limit our Chernoff
 
 $$P(S \ge 1) \le e^{-t}*M_s(t) \ge 0.95$$
 
-Now we need to find $N$ from this inequality
+Let`s substitute values to the inequality
+$$e^{-t}*(\frac{15*N} {15*N - t})^{100} \ge 0.95$$ 
 
-$$N \le \frac{t*(e*0.95)^{1/100}}{15*((e*0.95)^{1/100} - 1)}$$ To find N
-we need to take derivative
+Now we need to express and find $N$ from this inequality
+Also as $t > 0$, we can consider the most suitable value and it will be $t=1$
+After calculation $N$ is equal
+
+$$ N \le \frac{t*(e*0.95)^{1/100}}{15*((e*0.95)^{1/100} - 1)}$$
 
 $$N \le 6.06$$
 
@@ -605,6 +614,7 @@ $$N \le \frac {10 - 1.65}{0.1 * 15}$$ $$N \le 5.56$$
 
 **Simulate the realization**
 
+In this part we need to compare our results from different inequalities to probability that was given in the condition
 ```{r}
 # Lowest and highest value of N
 lowest <- 5.56
